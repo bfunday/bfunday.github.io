@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>经济法案例库 · 全案例卡片（字体加大版）</title>
+    <!-- Font Awesome 6 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* 全局重置与深色背景截图辅助 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            background-color: #333;          /* 深灰背景，方便截图识别画布边界 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;                 /* 防止页面滚动 */
+        }
+
+        /* 主画布：1900x950，直角外框，圆角为0，白色基底 */
+        .canvas {
+            width: 1900px;
+            height: 950px;
+            background: linear-gradient(160deg, #f8faff 0%, #ffffff 100%);
+            border-radius: 0;                 /* 外直角，便于截图贴合 */
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+            position: relative;
+            overflow: hidden;                  /* 隐藏任何可能溢出的内容 */
+            display: flex;
+            flex-direction: column;
+            padding: 30px 40px 20px 40px;      /* 上下左右内边距，内容安全区 */
+        }
+
+        /* 标题区 — 简洁但清晰 */
+        .dashboard-header {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .title-main {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .title-main h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0B1C3A, #2A5CAA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px;
+        }
+        .badge-total {
+            background: #2A5CAA;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+            padding: 8px 22px;
+            border-radius: 60px;
+            box-shadow: 0 4px 12px rgba(42,92,170,0.3);
+        }
+        .badge-total i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+        .subhead {
+            color: #4a5b79;
+            font-size: 1.2rem;
+            border-left: 4px solid #2A5CAA;
+            padding-left: 20px;
+            background: #f0f5ff;
+            padding: 8px 28px;
+            border-radius: 40px;
+        }
+
+        /* 卡片网格：一行四列，间距均匀 */
+        .cards-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            min-height: 0;
+            margin-top: 8px;
+        }
+
+        /* 卡片基本样式 — 圆角16px，柔光阴影 */
+        .module-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(4px);
+            border-radius: 16px;
+            box-shadow: 0 20px 35px -8px rgba(0,20,60,0.15), 0 6px 12px rgba(0,0,0,0.02);
+            padding: 24px 22px 22px 22px;       /* 上下内边距稍减，以容纳更多案例 */
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.25s ease, box-shadow 0.25s;
+            border: 1px solid rgba(255,255,255,0.4);
+            height: 100%;
+            max-height: 100%;
+        }
+
+        .module-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 30px 45px -12px rgba(42,92,170,0.25);
+        }
+
+        /* 卡片头部 — 模块名 + 主题色标识 */
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;                /* 原16px → 12px */
+        }
+        .module-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            color: white;
+        }
+        .module-name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .module-sub {
+            font-size: 1.1rem;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+
+        /* 案例数量大号显示 */
+        .stat-number {
+            font-size: 3.8rem;
+            font-weight: 800;
+            line-height: 1;
+            margin: 5px 0 12px 0;               /* 原10px 0 16px → 5px 0 12px */
+            letter-spacing: -1px;
+            display: flex;
+            align-items: baseline;
+            color: #0B1C3A;
+        }
+        .stat-unit {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-left: 8px;
+            color: #64748b;
+        }
+
+        /* 精选案例列表 — 全部案例，使用统一图标 */
+        .featured-list {
+            list-style: none;
+            margin: 8px 0 12px 0;               /* 上下外边距减小 */
+            flex: 1;
+            overflow-y: auto;                    /* 若内容过多可滚动，但高度足够 */
+        }
+        .featured-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;                 /* 原16px → 10px，紧凑但清晰 */
+            font-size: 1.2rem;                    /* 保持大字体 */
+            font-weight: 500;
+            color: #1e293b;
+        }
+        .featured-list li i {
+            font-size: 1.2rem;                    /* 与文字协调 */
+            color: inherit;
+            margin-top: 3px;
+            min-width: 22px;
+            text-align: center;
+        }
+        .case-title {
+            line-height: 1.4;
+            font-weight: 550;
+            word-break: break-word;                /* 防止长单词溢出 */
+        }
+
+        /* 底部标签组 */
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 6px;                       /* 原10px → 6px */
+            border-top: 1px dashed #d9e2ef;
+            padding-top: 14px;                      /* 原20px → 14px */
+        }
+        .tag {
+            background: #edf2fa;
+            color: #1e3a6b;
+            font-size: 1.0rem;                      /* 保持1.0rem */
+            font-weight: 600;
+            padding: 5px 14px;
+            border-radius: 30px;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
+            border: 1px solid transparent;
+            transition: 0.15s;
+        }
+        .tag:hover {
+            background: #d5e2ff;
+            border-color: #a0b8e0;
+        }
+
+        /* 每个模块独有的主题色 — 应用于图标及标签背景 */
+        .m1 .module-icon { background: #2A5CAA; }
+        .m1 .featured-list li i { color: #2A5CAA; }
+        .m1 .tag { background: #e2ebff; color: #1e3a6b; }
+
+        .m2 .module-icon { background: #1e7e6c; }
+        .m2 .featured-list li i { color: #1e7e6c; }
+        .m2 .tag { background: #def5f0; color: #0f5e4f; }
+
+        .m3 .module-icon { background: #b6573a; }
+        .m3 .featured-list li i { color: #b6573a; }
+        .m3 .tag { background: #ffe6dd; color: #a13e2a; }
+
+        .m4 .module-icon { background: #8e4c9e; }
+        .m4 .featured-list li i { color: #8e4c9e; }
+        .m4 .tag { background: #f1e4ff; color: #5e2e7c; }
+
+        /* 辅助脚注 */
+        .footer-note {
+            margin-top: 15px;
+            text-align: right;
+            color: #5f7daf;
+            font-size: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.6);
+            padding: 8px 24px;
+            border-radius: 60px;
+            border: 1px solid rgba(200,218,240,0.7);
+        }
+        .footer-note i {
+            color: #2A5CAA;
+            margin-right: 8px;
+        }
+        .qr-tip {
+            background: white;
+            padding: 5px 18px;
+            border-radius: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            font-size: 0.95rem;
+        }
+
+        /* 确保没有任何溢出 */
+        .canvas, .cards-grid, .module-card {
+            overflow: hidden;
+        }
+
+        /* 让案例列表在必要时内部滚动（但高度足够，不启用） */
+        .featured-list {
+            overflow-y: visible;
+        }
+    </style>
+</head>
+<body>
+<div class="canvas">
+
+    <!-- 头部标题区 -->
+    <div class="dashboard-header">
+        <div class="title-main">
+            <h1>⚖️ 湾区·实境 经济法案例库</h1>
+            <span class="badge-total"><i class="fas fa-database"></i> 26 个实境案例</span>
+        </div>
+        <div class="subhead">
+            <i class="fas fa-th-large" style="margin-right: 8px;"></i>四大模块 · 一案三融 · 扫码即学
+        </div>
+    </div>
+
+    <!-- 四张核心卡片网格 (每个卡片包含所属模块的全部案例) -->
+    <div class="cards-grid">
+        
+        <!-- 模块一卡片：竞争与反垄断 (6个案例) -->
+        <div class="module-card m1">
+            <div class="card-header">
+                <div class="module-icon"><i class="fas fa-scale-balanced"></i></div>
+                <div>
+                    <div class="module-name">模块一 · 竞争与反垄断</div>
+                    <div class="module-sub">市场规制 · 公平竞争</div>
+                </div>
+            </div>
+            <div class="stat-number">6 <span class="stat-unit">个案例</span></div>
+            <ul class="featured-list">
+                <li><i class="fas fa-circle"></i><span class="case-title">“悦饮咖啡”VS“悠咖咖啡”——价格补贴战</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">社区团购“一分购”——平台低价倾销</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">某平台“二选一”——独家交易协议</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">初创企业遭遇“专利灌木丛”</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">跨境并购中的经营者集中申报</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">直播带货“全网最低价”争议</span></li>
+            </ul>
+            <div class="tag-cloud">
+                <span class="tag">反垄断</span>
+                <span class="tag">滥用市场支配地位</span>
+                <span class="tag">经营者集中</span>
+                <span class="tag">不正当竞争</span>
+                <span class="tag">HHI指数</span>
+            </div>
+        </div>
+
+        <!-- 模块二卡片：消费者保护 (7个案例) -->
+        <div class="module-card m2">
+            <div class="card-header">
+                <div class="module-icon"><i class="fas fa-cart-shopping"></i></div>
+                <div>
+                    <div class="module-name">模块二 · 消费者保护</div>
+                    <div class="module-sub">产品质量 · 数字人权</div>
+                </div>
+            </div>
+            <div class="stat-number">7 <span class="stat-unit">个案例</span></div>
+            <ul class="featured-list">
+                <li><i class="fas fa-circle"></i><span class="case-title">新能源汽车“自燃门”召回事件</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">盲盒经济“隐藏款”概率不透明</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">APP“过度索权”与个人信息泄露</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">跨境电商“买一送三”算法歧视</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">保健品虚假广告“专家站台”</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">预付式消费“跑路”维权困境</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">智能家居“偷听”侵权第一案</span></li>
+            </ul>
+            <div class="tag-cloud">
+                <span class="tag">消费者权益</span>
+                <span class="tag">产品责任</span>
+                <span class="tag">个人信息保护</span>
+                <span class="tag">算法歧视</span>
+                <span class="tag">召回义务</span>
+            </div>
+        </div>
+
+        <!-- 模块三卡片：宏观调控与财税 (6个案例) -->
+        <div class="module-card m3">
+            <div class="card-header">
+                <div class="module-icon"><i class="fas fa-chart-line"></i></div>
+                <div>
+                    <div class="module-name">模块三 · 宏观调控与财税</div>
+                    <div class="module-sub">财政补贴 · 货币政策</div>
+                </div>
+            </div>
+            <div class="stat-number">6 <span class="stat-unit">个案例</span></div>
+            <ul class="featured-list">
+                <li><i class="fas fa-circle"></i><span class="case-title">新能源汽车“骗补”调查案</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">研发费用加计扣除被稽查</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">跨境电商“低报价格”走私案</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">数字货币试点与货币政策传导</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">政府绿色采购示范项目</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">疫情纾困政策下的“骗补”风波</span></li>
+            </ul>
+            <div class="tag-cloud">
+                <span class="tag">财政补贴</span>
+                <span class="tag">税务合规</span>
+                <span class="tag">关税</span>
+                <span class="tag">货币政策</span>
+                <span class="tag">政府采购</span>
+            </div>
+        </div>
+
+        <!-- 模块四卡片：新兴领域与跨境治理 (7个案例) -->
+        <div class="module-card m4">
+            <div class="card-header">
+                <div class="module-icon"><i class="fas fa-microchip"></i></div>
+                <div>
+                    <div class="module-name">模块四 · 新兴与跨境</div>
+                    <div class="module-sub">算法 · 数据 · 执法协作</div>
+                </div>
+            </div>
+            <div class="stat-number">7 <span class="stat-unit">个案例</span></div>
+            <ul class="featured-list">
+                <li><i class="fas fa-circle"></i><span class="case-title">算法合谋反垄断调查案（改编自美国RealPage案）</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">深圳某社交平台数据限制竞争案——“大湾区数据反垄断第一案”</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">粤港澳海关联合查获侵权运动鞋案——跨境执法协作典范</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">数字人民币货币政策传导模拟（深圳试点·斯洛文尼亚数字债券案）</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">2024互联网平台金融监管风暴——微众、网商、度小满等罚单案</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">某省某市新能源汽车补贴政策违反公平竞争审查标准案</span></li>
+                <li><i class="fas fa-circle"></i><span class="case-title">直播带货数据造假第一案（法治日报2024年调查报道）</span></li>
+            </ul>
+            <div class="tag-cloud">
+                <span class="tag">算法合谋</span>
+                <span class="tag">数据垄断</span>
+                <span class="tag">跨境执法</span>
+                <span class="tag">金融监管</span>
+                <span class="tag">公平竞争审查</span>
+                <span class="tag">数字人民币</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部简洁信息 -->
+    <div class="footer-note">
+        <span><i class="fas fa-check-circle"></i> 所有案例基于真实事件改编 / 具有真实事件基础</span>
+        <span class="qr-tip"><i class="fas fa-qrcode"></i> 扫码可读完整案情、沙盘参数与思政议题</span>
+    </div>
+
+    <!-- 装饰微标 -->
+    <div style="position: absolute; bottom: 12px; right: 55px; opacity: 0.1; pointer-events: none; font-size: 6rem; z-index: 0;">⚖️</div>
+</div>
+</body>
+</html>
