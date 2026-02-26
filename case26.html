@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>经济法实境案例库 · 案例26（字体再加大）</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            background-color: #333;                /* 深灰背景，居中画布 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* 主画布：1900x950，直角外框，内无滚动 */
+        .canvas {
+            width: 1900px;
+            height: 950px;
+            background: #F0F4F8;                   /* 原背景色 */
+            border-radius: 0;                       /* 外直角，便于截图 */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;                       /* 彻底隐藏滚动条 */
+            padding: 10px 16px 8px 16px;            /* 内边距稍紧凑，为字体留空间 */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 顶部标题栏 */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 14px 22px;                      /* 内边距加大 */
+            border-radius: 16px;                      /* 内圆角16px */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 10px;                      
+            flex-shrink: 0;
+        }
+        .header-left h1 {
+            font-size: 1.8rem;                         /* 1.6rem → 1.8rem (≈29px) */
+            color: #0B1C3A;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .module-badge {
+            background: #2A5CAA;
+            color: white;
+            font-size: 1.1rem;                         /* 1rem → 1.1rem */
+            padding: 8px 16px;
+            border-radius: 10px;                         
+        }
+        .header-meta {
+            color: #666;
+            font-size: 1.1rem;                          /* 1rem → 1.1rem */
+            display: flex;
+            gap: 18px;
+            align-items: center;
+        }
+
+        /* 主体网格布局 (两列) */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;                                 
+            flex: 1;                                    
+            min-height: 0;                               
+            overflow: hidden;                             
+        }
+
+        /* 列容器 — 采用flex列 */
+        .col {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;                                   
+            overflow: hidden;                             
+            height: 100%;
+        }
+
+        /* 通用卡片样式 — 圆角16px，内边距增加 */
+        .card {
+            background: white;
+            border-radius: 16px;                          
+            padding: 18px 20px;                            /* 内边距增加 */
+            border: 1px solid #e6ecf5;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            font-size: 1.1rem;                              /* 基准字体1rem → 1.1rem (≈17.6px) */
+            flex-shrink: 0;                                 
+        }
+
+        /* 标题样式 — 再调大 */
+        .section-title {
+            font-size: 1.35rem;                              /* 1.2rem → 1.35rem (≈21.6px) */
+            font-weight: bold;
+            color: #2A5CAA;
+            margin-bottom: 10px;                              
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 6px;
+        }
+        .section-title i {
+            font-size: 1.5rem;
+        }
+
+        /* 正文段落 */
+        p {
+            line-height: 1.5;                               
+            color: #333;
+            margin-bottom: 10px;
+            text-align: justify;
+            font-size: 1.1rem;                                 
+        }
+
+        /* 标签组 */
+        .tag-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+        .tag {
+            background: #eef3fc;
+            color: #2A5CAA;
+            font-size: 0.95rem;                              /* 0.85rem → 0.95rem (15.2px) */
+            padding: 6px 14px;
+            border-radius: 40px;                              
+        }
+        .tag.fake {
+            background: #FCE4EC;
+            color: #E91E63;
+        }
+
+        /* 列表样式 */
+        ul {
+            list-style: none;
+        }
+        li {
+            margin-bottom: 8px;                               
+            padding-left: 22px;
+            position: relative;
+            color: #333;
+            line-height: 1.5;
+            font-size: 1.1rem;                                 
+        }
+        li i {
+            position: absolute;
+            left: 0;
+            top: 5px;
+            color: #2A5CAA;
+            font-size: 1rem;
+        }
+
+        .emph {
+            color: #2A5CAA;
+            font-weight: bold;
+        }
+
+        /* 虚假数据样式 */
+        .fake-data {
+            color: #E91E63;
+            font-weight: bold;
+            text-decoration: line-through;
+            margin-right: 6px;
+            font-size: 1.1rem;
+        }
+        .real-data {
+            color: #4CAF50;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* 表格 — 字体调大 */
+        .param-table {
+            width: 100%;
+            font-size: 1.05rem;                              /* 0.95rem → 1.05rem (≈16.8px) */
+            border-collapse: collapse;
+            margin-top: 6px;
+        }
+        .param-table th {
+            background: #eef3fc;
+            padding: 8px 10px;
+            text-align: left;
+            color: #333;
+        }
+        .param-table td {
+            border-bottom: 1px solid #eee;
+            padding: 8px 10px;
+        }
+        .param-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* 重点框 */
+        .highlight-box {
+            background: #FFFBE6;
+            border: 1px solid #FFE58F;
+            padding: 12px 14px;
+            border-radius: 16px;                             
+            font-size: 1.05rem;                               
+            color: #555;
+            margin-top: 10px;
+        }
+
+        /* 思政部分底部的灰色框 */
+        .think-footer {
+            margin-top: 10px;
+            font-size: 1rem;                                 /* 0.9rem → 1rem */
+            background: #f8f9fa;
+            padding: 10px 14px;
+            border-radius: 14px;
+            color: #666;
+            text-align: center;
+        }
+
+        /* 底部装饰行 */
+        .canvas-footer {
+            text-align: right;
+            margin-top: 6px;
+            font-size: 0.95rem;                               /* 0.85rem → 0.95rem */
+            color: #aaa;
+            flex-shrink: 0;
+        }
+
+        /* 完全隐藏滚动条 */
+        .canvas, .main-grid, .col {
+            scrollbar-width: none;  
+            -ms-overflow-style: none; 
+        }
+        .canvas::-webkit-scrollbar, .main-grid::-webkit-scrollbar, .col::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* 微调卡片高度自适应 */
+        .card:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="canvas">
+
+    <!-- 顶部标题栏 -->
+    <div class="header-bar">
+        <div class="header-left">
+            <h1>
+                <span class="module-badge">案例 26</span>
+                直播带货数据造假第一案（法治日报2024年调查报道）
+            </h1>
+        </div>
+        <div class="header-meta">
+            <span><i class="fas fa-map-pin"></i> 佛山 · 杭州 · 2024</span>
+            <span><i class="fas fa-tag"></i> 模块四 · 新兴风险治理</span>
+        </div>
+    </div>
+
+    <!-- 主体两列网格 -->
+    <div class="main-grid">
+        
+        <!-- 左列 -->
+        <div class="col">
+            <!-- 案例情境卡片 -->
+            <div class="card">
+                <div class="section-title"><i class="fas fa-briefcase"></i> 案例情境</div>
+                <p><strong>真实事件改编：</strong>2024年10月，《法治日报》刊发深度调查，揭露直播带货行业数据造假乱象：某头部主播团队通过“刷单”“改销量”“虚假预约”等手段，将单场销售额虚标至数亿元，实际退货率高达70%；商家用旧链接累计销量冒充新品热度。市场监管部门对涉案MCN机构立案调查，拟适用《反不正当竞争法》进行处罚。本案例引导学生分析虚假流量行为的法律定性、平台治理责任以及反不正当竞争法在新业态中的适用。</p>
+                <div class="tag-group">
+                    <span class="tag">#数据造假</span>
+                    <span class="tag fake">#虚假宣传</span>
+                    <span class="tag">#平台责任</span>
+                    <span class="tag">#反不正当竞争</span>
+                </div>
+            </div>
+
+            <!-- 经济法问题聚焦卡片 -->
+            <div class="card">
+                <div class="section-title"><i class="fas fa-gavel"></i> 经济法问题聚焦</div>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> <span class="emph">虚假宣传认定：</span>虚构销量、伪造热度是否构成《反不正当竞争法》第八条的虚假商业宣传？</li>
+                    <li><i class="fas fa-check-circle"></i> <span class="emph">平台治理责任：</span>直播平台是否尽到合理注意义务？应否承担连带责任？</li>
+                    <li><i class="fas fa-check-circle"></i> <span class="emph">消费者权益保护：</span>消费者因信赖虚假数据而购买，能否主张欺诈赔偿？</li>
+                </ul>
+                <div class="highlight-box">
+                    <i class="fas fa-book-open"></i> <strong>关联法条：</strong>《反不正当竞争法》第8条、第20条；《电子商务法》第38条；《消费者权益保护法》第55条。
+                </div>
+            </div>
+            
+            <!-- 经济学分析工具卡片（占据剩余空间） -->
+            <div class="card" style="flex: 1 1 auto; display: flex; flex-direction: column;">
+                <div class="section-title"><i class="fas fa-chart-line"></i> 经济学分析工具</div>
+                <ul style="flex: 1;">
+                    <li><i class="fas fa-calculator"></i> <span class="emph">信号传递模型：</span>虚假数据如何扭曲市场信号，导致“劣币驱逐良币”。</li>
+                    <li><i class="fas fa-calculator"></i> <span class="emph">声誉机制：</span>主播声誉资本与造假动机的博弈分析。</li>
+                    <li><i class="fas fa-calculator"></i> <span class="emph">监管威慑效果：</span>处罚力度对行业造假率的预期影响。</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 右列 -->
+        <div class="col">
+            <!-- 监管工具箱卡片 -->
+            <div class="card">
+                <div class="section-title"><i class="fas fa-shield-alt"></i> 监管工具箱</div>
+                <p><i class="fas fa-globe" style="color:#2A5CAA;"></i> <strong>现行举措：</strong>市场监管总局《网络直播营销管理办法（试行）》明确直播数据应当真实；平台需建立流量治理机制。本案中监管部门拟依据《反不正当竞争法》对MCN机构处以罚款。</p>
+                <p><i class="fas fa-university" style="color:#2A5CAA;"></i> <strong>国际比较：</strong>美国FTC对虚假网红数据的执法、欧盟《数字服务法案》对虚假指标的规制。</p>
+            </div>
+
+            <!-- 沙盘推演参数卡片 -->
+            <div class="card">
+                <div class="section-title"><i class="fas fa-dice-d6"></i> 沙盘推演参数</div>
+                <table class="param-table">
+                    <tr><th colspan="2">直播场景设定</th></tr>
+                    <tr><td>主播粉丝数</td><td>1000万</td></tr>
+                    <tr><td>宣称销售额</td><td><span class="fake-data">2亿元</span> <span class="real-data">虚假</span></td></tr>
+                    <tr><td>真实销售额</td><td><span class="real-data">3000万元</span></td></tr>
+                    <tr><td>退货率</td><td><span class="fake-data">70%</span> (异常)</td></tr>
+                    <tr><td>刷单成本</td><td>100万元</td></tr>
+                    <tr><th colspan="2">监管与法律后果</th></tr>
+                    <tr><td>虚假宣传认定</td><td>是 / 否</td></tr>
+                    <tr><td>罚款计算</td><td>销售额1%-5% / 固定金额</td></tr>
+                    <tr><td>平台担责</td><td>是 / 否（按比例）</td></tr>
+                </table>
+            </div>
+
+            <!-- 思政思辨题卡片 + 底部说明整合 -->
+            <div class="card" style="display: flex; flex-direction: column;">
+                <div class="section-title"><i class="fas fa-heart"></i> 思政思辨题</div>
+                <ul style="margin-bottom: 10px;">
+                    <li><i class="fas fa-comment-dots"></i> 直播带货数据造假，伤害的是谁的利益？对行业生态有何长期影响？</li>
+                    <li><i class="fas fa-comment-dots"></i> 如果你是该主播团队的合规顾问，会如何建议团队避免法律风险？</li>
+                    <li><i class="fas fa-comment-dots"></i> 数字经济时代，如何构建“不敢假、不能假、不想假”的诚信体系？</li>
+                </ul>
+                <div class="think-footer">
+                    <i class="fas fa-info-circle"></i> * 本案例基于《法治日报》2024年10月调查报道改编，案件正在处理中。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部版权行 -->
+    <div class="canvas-footer">
+        <i class="fas fa-database"></i> 经济法实境案例库 · 扫码获取完整案情
+    </div>
+</div>
+</body>
+</html>
