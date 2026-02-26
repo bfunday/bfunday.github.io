@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>经济法案例库 · 网格总览（描述+标签再加大）</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            background-color: #333;               /* 深色背景，截图辅助 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .canvas {
+            width: 1900px;
+            height: 950px;
+            background: linear-gradient(145deg, #F5F9FF 0%, #FFFFFF 100%);
+            border-radius: 0;                      /* 外直角，方便截图 */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;                       /* 无滚动条 */
+            padding: 30px 40px 25px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 头部 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(130deg, #0B1C3A, #2A5CAA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header .badge {
+            background: #2A5CAA;
+            color: white;
+            padding: 10px 28px;
+            border-radius: 60px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            box-shadow: 0 8px 16px rgba(42,92,170,0.2);
+        }
+
+        /* 网格容器：2行4列 */
+        .grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px;
+            align-content: start;
+            min-height: 0;
+        }
+
+        /* 卡片通用样式 */
+        .case-card {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 20px 18px 16px 18px;
+            box-shadow: 0 12px 28px -8px rgba(0, 20, 40, 0.12), 0 4px 12px rgba(0,0,0,0.02);
+            border: 1px solid rgba(255,255,255,0.7);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(2px);
+            height: 100%;
+            max-height: 400px;                       /* 略微增加以适应更大字体 */
+        }
+
+        .case-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 35px -8px #2A5CAA40;
+        }
+
+        /* 案例26特殊处理：高亮边框 */
+        .case-card.special {
+            border: 3px solid #2A5CAA;
+            background: #F0F7FF;
+            box-shadow: 0 20px 30px -8px #2A5CAA60;
+            grid-column: span 1;
+        }
+
+        /* 编号与标签行 */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .case-num {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #1e3a6b;
+            line-height: 1;
+            background: #EAF1FD;
+            padding: 4px 14px 4px 14px;
+            border-radius: 60px;
+            display: inline-block;
+        }
+        .tag-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .tag {
+            background: #eef3fc;
+            color: #2A5CAA;
+            font-size: 1rem;                          /* 0.9rem → 1rem */
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 40px;
+            white-space: nowrap;
+        }
+        .tag.highlight {
+            background: #FFEAD2;
+            color: #E65100;
+        }
+
+        /* 标题 */
+        .case-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #0B1C3A;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        /* 描述文字 - 再加大 */
+        .case-desc {
+            font-size: 1.2rem;                         /* 1.1rem → 1.2rem */
+            line-height: 1.6;
+            color: #334155;
+            margin-bottom: 14px;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 底部关键词/参数 - 加大 */
+        .card-footer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-top: 1px dashed #CFDDEB;
+            padding-top: 12px;
+            margin-top: auto;
+        }
+        .meta-item {
+            font-size: 1.05rem;                        /* 0.95rem → 1.05rem */
+            background: #F0F5FF;
+            padding: 5px 14px;
+            border-radius: 40px;
+            color: #1e3a6b;
+            font-weight: 500;
+        }
+        .meta-item i {
+            margin-right: 6px;
+            color: #2A5CAA;
+        }
+
+        /* 案例26专用高亮数据 */
+        .fake-data {
+            color: #D32F2F;
+            text-decoration: line-through;
+            font-weight: 700;
+            background: #FFEBEE;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+        .real-data {
+            color: #2A5CAA;
+            font-weight: 800;
+        }
+
+        /* 调整特殊卡片内部 */
+        .special .case-desc {
+            -webkit-line-clamp: 3;
+        }
+        .extra-stats {
+            margin: 6px 0 10px;
+            background: #FFFFFFE0;
+            border-radius: 16px;
+            padding: 10px 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 16px;
+            border: 1px solid #CDE1F5;
+        }
+        .stat-badge {
+            font-size: 1.2rem;                          /* 1.1rem → 1.2rem */
+            font-weight: 600;
+            color: #0B1C3A;
+        }
+        .stat-badge i {
+            color: #2A5CAA;
+            width: 24px;
+        }
+
+        .grid {
+            grid-auto-rows: minmax(380px, auto);       /* 最小高度增加以支持更大字体 */
+        }
+
+        /* 底部说明 */
+        .footer-note {
+            margin-top: 12px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 20px;
+            color: #4a6a9e;
+            font-size: 1.0rem;
+            flex-shrink: 0;
+        }
+
+        /* 确保无滚动 */
+        .canvas, .grid {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<div class="canvas">
+    <div class="header">
+        <h1><i class="fas fa-scale-balanced" style="margin-right: 16px;"></i>湾区·实境 经济法案例库</h1>
+        <div class="badge"><i class="fas fa-database"></i> 7个实境案例 · 网格总览</div>
+    </div>
+
+    <div class="grid">
+        <!-- 案例20 平台算法共谋 -->
+        <div class="case-card">
+            <div class="card-header">
+                <span class="case-num">20</span>
+                <div class="tag-group">
+                    <span class="tag">算法合谋</span>
+                    <span class="tag">默示共谋</span>
+                </div>
+            </div>
+            <div class="case-title">平台“算法合谋”反垄断调查</div>
+            <div class="case-desc">
+                国内首例算法合谋案：智购科技利用定价算法与竞争者保持价格同步，涉嫌默示共谋。深圳市监局启动算法审计。
+            </div>
+            <div class="card-footer">
+                <span class="meta-item"><i class="fas fa-robot"></i> 价格平行</span>
+                <span class="meta-item"><i class="fas fa-chart-line"></i> 博弈论</span>
+                <span class="meta-item"><i class="fas fa-gavel"></i> 反垄断</span>
+            </div>
+        </div>
+
+        <!-- 案例21 数据必需设施 -->
+        <div class="case-card">
+            <div class="card-header">
+                <span class="case-num">21</span>
+                <div class="tag-group">
+                    <span class="tag">数据垄断</span>
+                    <span class="tag">必需设施</span>
+                </div>
+            </div>
+            <div class="case-title">深圳某社交平台数据限制竞争案</div>
+            <div class="case-desc">
+                “大湾区数据反垄断第一案”：某平台拒绝向竞争对手提供债券实时数据，被认定滥用市场支配地位。
+            </div>
+            <div class="card-footer">
+                <span class="meta-item"><i class="fas fa-database"></i> 拒绝交易</span>
+                <span class="meta-item"><i class="fas fa-chart-simple"></i> 网络效应</span>
+                <span class="meta-item"><i class="fas fa-scale-balanced"></i> 必需设施</span>
+            </div>
+        </div>
+
+        <!-- 案例22 跨境垄断协议（涉外法治） -->
+        <div class="case-card">
+            <div class="card-header">
+                <span class="case-num">22</span>
+                <div class="tag-group">
+                    <span class="tag">跨境执法</span>
+                    <span class="tag">证据互认</span>
+                </div>
+            </div>
+            <div class="case-title">粤港澳海关联合查获侵权鞋案</div>
+            <div class="case-desc">
+                黄埔海关与香港海关跨境协作，拦截13000余双侵权运动鞋，探索管辖冲突、处罚折抵等规则衔接。
+            </div>
+            <div class="card-footer">
+                <span class="meta-item"><i class="fas fa-passport"></i> 执法协作</span>
+                <span class="meta-item"><i class="fas fa-gavel"></i> 管辖冲突</span>
+                <span class="meta-item"><i class="fas fa-handshake"></i> 规则衔接</span>
+            </div>
+        </div>
+
+        <!-- 案例23 数字人民币推广 -->
+        <div class="case-card">
+            <div class="card-header">
+                <span class="case-num">23</span>
+                <div class="tag-group">
+                    <span class="tag">数字货币</span>
+                    <span class="tag">货币政策</span>
+                </div>
+            </div>
+            <div class="case-title">数字人民币货币政策传导模拟</div>
+            <div class="case-desc">
+                深圳试点数字人民币，结合斯洛文尼亚数字债券案，模拟CBDC对货币乘数、利率走廊及金融稳定的影响。
+            </div>
+            <div class="card-footer">
+                <span class="meta-item"><i class="fas fa-coins"></i> 货币乘数</span>
+                <span class="meta-item"><i class="fas fa-chart-line"></i> 利率走廊</span>
+                <span class="meta-item"><i class="fas fa-building-columns"></i> 金融稳定</span>
+            </div>
+        </div>
+
+        <!-- 案例24 平台金融混业 -->
+        <div class="case-card">
+            <div class="card-header">
+                <span class="case-num">24</span>
+                <div class="tag-group">
+                    <span class="tag">金融监管</span>
+                    <span class="tag">系统性风险</span>
+                </div>
+            </div>
+            <div class="case-title">互联网平台金融监管风暴</div>
+            <div class="case-desc">
+                微众、网商、度小满等收罚单，事由包括支付违规、信贷资金流入楼市。聚焦功能监管与宏观审慎。
+            </div>
+            <div class="card-footer">
+                <span class="meta-item"><i class="fas fa-building"></i> 功能监管</span>
+                <span class="meta-item"><i class="fas fa-triangle-exclamation"></i> 监管套利</span>
+                <span class="meta-item"><i class="fas fa-coins"></i> 罚单1387万</span>
+            </div>
+        </div>
+
+        <!-- 案例25 新能源补贴合规 -->
+        <div class="case-card">
+            <div class="card-header">
+                <span class="case-num">25</span>
+                <div class="tag-group">
+                    <span class="tag">公平竞争审查</span>
+                    <span class="tag">地方保护</span>
+                </div>
+            </div>
+            <div class="case-title">新能源补贴违反公平竞争案</div>
+            <div class="case-desc">
+                某市新能源汽车补贴仅限本地注册企业及户籍居民，被市场监管总局通报废止，涉及产业政策与竞争政策冲突。
+            </div>
+            <div class="card-footer">
+                <span class="meta-item"><i class="fas fa-car"></i> 双重差分</span>
+                <span class="meta-item"><i class="fas fa-scale-balanced"></i> 例外规定</span>
+                <span class="meta-item"><i class="fas fa-globe"></i> 统一大市场</span>
+            </div>
+        </div>
+
+        <!-- 案例26 直播带货数据造假 (特殊高亮卡片) -->
+        <div class="case-card special">
+            <div class="card-header">
+                <span class="case-num">26</span>
+                <div class="tag-group">
+                    <span class="tag highlight">虚假宣传</span>
+                    <span class="tag">平台责任</span>
+                    <span class="tag">诚信建设</span>
+                </div>
+            </div>
+            <div class="case-title">📢 直播带货数据造假第一案</div>
+            <div class="case-desc">
+                某头部主播宣称销售额 <span class="fake-data">2亿元</span> <span class="real-data">(实为3000万)</span>，退货率高达70%，涉嫌刷单炒信。法治日报2024年调查报道。
+            </div>
+            <!-- 额外参数区域 -->
+            <div class="extra-stats">
+                <span class="stat-badge"><i class="fas fa-users"></i> 粉丝1000万</span>
+                <span class="stat-badge"><i class="fas fa-sack-dollar"></i> 刷单成本100万</span>
+                <span class="stat-badge"><i class="fas fa-percent"></i> 退货率70%</span>
+                <span class="stat-badge"><i class="fas fa-scale-balanced"></i> 罚款1%-5%</span>
+            </div>
+            <div class="card-footer" style="border-top-color: #2A5CAA;">
+                <span class="meta-item"><i class="fas fa-quote-right"></i> 思辨：如何构建“不敢假”体系？</span>
+                <span class="meta-item"><i class="fas fa-gavel"></i> 反不正当竞争法第8条</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部说明 -->
+    <div class="footer-note">
+        <span><i class="fas fa-check-circle" style="color: #2A5CAA;"></i> 所有案例基于真实事件改编</span>
+        <span><i class="fas fa-qrcode"></i> 扫码获取完整案情及沙盘参数</span>
+    </div>
+</div>
+</body>
+</html>
