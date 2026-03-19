@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企业竞争合规实验台 (深色模式)</title>
+    <style>
+        /* 核心色彩变量：深色模式配色方案 */
+        :root {
+            --primary: #3b82f6;      /* 主按钮/强调色 (亮蓝，适合深色背景) */
+            --success: #22c55e;      /* 成功色 (亮绿) */
+            --warning: #f59e0b;      /* 警告色 (亮橙黄) */
+            --danger: #ef4444;       /* 危险色 (亮红) */
+            --dark: #f8fafc;         /* 文本颜色 (替换为极浅灰白) */
+            --border: #334155;       /* 边框色 (深灰蓝) */
+            --bg-card: #1e293b;      /* 卡片底色 (深蓝灰) */
+            --highlight: #334155;    /* 动效高亮色 (稍微提亮的背景) */
+            
+            /* 页面背景变量 */
+            --bg-body: #020617;      /* 页面大背景 (极暗蓝/近黑) */
+            --bg-header: #0f172a;    /* 顶栏背景 (深空蓝) */
+            --panel-left-bg: #0f172a;/* 左侧面板背景 (深空蓝) */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        
+        /* 页面基础设置 */
+        body { background-color: var(--bg-body); color: var(--dark); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; font-size: 16px;}
+
+        /* 主容器 */
+        .dashboard { width: 100%; max-width: 1200px; background: var(--bg-header); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); overflow: hidden; display: flex; flex-direction: column; min-height: 850px;}
+
+        /* Header (顶部区域) */
+        header { background: var(--bg-header); border-bottom: 1px solid var(--border); color: #fff; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { font-size: 30px; font-weight: bold; margin-bottom: 5px; }
+        header p { color: #94a3b8; font-size: 16px; }
+        .progress-indicator { background: rgba(255,255,255,0.05); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 16px; border: 1px solid var(--border); color: var(--dark);}
+
+        /* Main Content */
+        .main-content { display: flex; flex: 1; overflow: hidden; }
+        
+        /* Left Panel - Context (左侧情境区) */
+        .panel-left { flex: 6; padding: 30px; background: var(--panel-left-bg); border-right: 1px solid var(--border); overflow-y: auto; }
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); position: relative;}
+        .card-header { font-weight: bold; font-size: 18px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; color: var(--dark); }
+        .card-body { font-size: 16px; color: #cbd5e1; line-height: 1.7;}
+        .card-body ul { padding-left: 20px; margin-bottom: 10px; }
+        
+        /* Interactive Elements in Cards */
+        details { background: #0f172a; padding: 12px; border-radius: 6px; border: 1px solid var(--border); margin-top: 10px; cursor: pointer; }
+        summary { font-weight: bold; color: var(--primary); outline: none; font-size: 16px;}
+        .comment-box { background: #172554; padding: 12px; border-radius: 6px; border-left: 4px solid var(--primary); margin-top: 10px; font-style: italic; color: #93c5fd;}
+        .warning-text { color: var(--danger); font-size: 14px; margin-top: 5px; }
+
+        /* Right Panel - Risk (右侧风险区) */
+        .panel-right { flex: 4; padding: 30px; background: var(--panel-left-bg); display: flex; flex-direction: column; }
+        .section-title { font-weight: bold; font-size: 22px; margin-bottom: 20px; color: #e2e8f0; display: flex; align-items: center; }
+        
+        /* Risk Meter */
+        .risk-meter-container { margin-bottom: 30px; }
+        .risk-label { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 16px; font-weight: bold; color: var(--dark);}
+        .risk-bar-bg { height: 14px; background: #334155; border-radius: 7px; overflow: hidden; border: 1px solid var(--border);}
+        .risk-bar-fill { height: 100%; width: 10%; background: var(--success); transition: all 0.5s ease; }
+        
+        /* Risk List */
+        .risk-list { list-style: none; flex: 1; }
+        .risk-item { padding: 14px 16px; margin-bottom: 12px; background: #451a03; border-left: 4px solid var(--warning); border-radius: 4px; font-size: 16px; font-weight: bold; display: none; align-items: center; color: #fde68a;}
+        .risk-item.weak { border-left-color: #475569; color: #94a3b8; font-weight: normal; background: #1e293b;}
+        .risk-item::before { content: "⚠"; margin-right: 10px; color: var(--warning); }
+        .risk-item.weak::before { color: #64748b; }
+        
+        /* Typewriter Prompt (智能提示区) */
+        .criteria-prompt { background: #020617; color: #38bdf8; padding: 18px; border-radius: 8px; font-family: monospace; font-size: 16px; min-height: 60px; margin-bottom: 24px; display: flex; align-items: center; line-height: 1.5; border-left: 4px solid var(--primary); border: 1px solid var(--border);}
+        
+        /* Final Summary */
+        .final-summary { background: #450a0a; border: 1px solid #7f1d1d; color: #fca5a5; padding: 18px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 18px; display: none; }
+
+        /* Footer - Controls (底部操作区) */
+        footer { padding: 24px 30px; background: var(--bg-header); border-top: 1px solid var(--border); display: flex; gap: 18px; justify-content: center; }
+        button { padding: 14px 28px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-action { background: var(--primary); color: white; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);}
+        .btn-action:hover { background: #2563eb; transform: translateY(-1px); box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);}
+        .btn-action:disabled { background: #334155; color: #64748b; cursor: not-allowed; box-shadow: none; transform: none;}
+        .btn-reset { background: #1e293b; border: 1px solid var(--border); color: #cbd5e1; }
+        .btn-reset:hover { background: #334155; color: #f8fafc;}
+
+        /* Animations */
+        .hidden { display: none !important; }
+        
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+        .anim-slide-left { animation: slideInLeft 0.6s ease forwards; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .anim-fade-in { animation: fadeIn 0.6s ease forwards; }
+
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        .anim-scale-in { animation: scaleIn 0.5s ease forwards; }
+
+        @keyframes shake { 
+            0%, 100% { transform: translateX(0); } 
+            20%, 60% { transform: translateX(-5px); } 
+            40%, 80% { transform: translateX(5px); } 
+        }
+        .anim-shake { animation: scaleIn 0.5s ease forwards, shake 0.4s ease 0.5s forwards; }
+
+        @keyframes highlightFlash { 
+            0% { background-color: var(--highlight); } 
+            100% { background-color: var(--bg-card); } 
+        }
+        .highlight-flash { animation: highlightFlash 1.5s ease forwards; }
+        
+        @keyframes slideInRightRisk { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .risk-show { display: flex !important; animation: slideInRightRisk 0.4s ease forwards; }
+
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+    <header>
+        <div>
+            <h1>企业竞争合规实验台</h1>
+            <p>竞争行为与法律风险动态演变</p>
+        </div>
+        <div class="progress-indicator" id="progress-text">阶段 0 / 3</div>
+    </header>
+
+    <div class="main-content">
+        <div class="panel-left" id="context-zone">
+            <div class="card">
+                <div class="card-header">初始信息：企业战略背景</div>
+                <div class="card-body">
+                    <p><strong>企业名称：</strong>悦饮 (YueYin)</p>
+                    <p><strong>经营目标：</strong>通过系列市场动作，快速进入平台销量榜前列。</p>
+                </div>
+            </div>
+
+            <div id="action-card-1" class="card hidden">
+                <div class="card-header">新增经营动作①：品牌设计</div>
+                <div class="card-body">
+                    <ul>
+                        <li>使用与头部竞品相似的主色调</li>
+                        <li>Logo 构图与排版风格接近</li>
+                        <li>包装杯型保持一致</li>
+                        <li>线下门店装潢风格类似</li>
+                    </ul>
+                    <div class="comment-box">
+                        <strong>用户评论：</strong>“这是悠咖出的新子品牌吗？”
+                    </div>
+                </div>
+            </div>
+
+            <div id="action-card-2" class="card hidden">
+                <div class="card-header">新增经营动作②：营销宣传</div>
+                <div class="card-body">
+                    <ul>
+                        <li>宣称“全网销量第一”</li>
+                        <li>宣称“消费者零差评”</li>
+                        <li>宣称荣获“国际品质大奖”</li>
+                    </ul>
+                    <p class="warning-text">* 状态：目前无法提供以上宣传的客观证明材料。</p>
+                    
+                    <details>
+                        <summary>展开：达人测评营销</summary>
+                        <p style="margin-top:8px;">委托头部达人发布视频，暗示：“某头部品牌（指代竞品）原料不安全，存在健康隐患。”</p>
+                    </details>
+                </div>
+            </div>
+
+            <div id="action-card-3" class="card hidden" style="border: 1px solid var(--danger);">
+                <div class="card-header" style="color: var(--danger);">新增经营动作③：技术推广</div>
+                <div class="card-body">
+                    <p>利用技术手段，当用户打开竞品点单页面时，强制弹出本品牌的高额优惠券。</p>
+                    
+                    <details>
+                        <summary>展开：技术特征</summary>
+                        <ul style="margin-top:8px;">
+                            <li>自动触发机制</li>
+                            <li>用户无法手动关闭该弹窗</li>
+                            <li>点击后强行改变访问路径至悦饮店铺</li>
+                        </ul>
+                    </details>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-right">
+            <div class="section-title">⚖️ 风险评估面板</div>
+            
+            <div class="risk-meter-container">
+                <div class="risk-label">
+                    <span>当前法律风险等级</span>
+                    <span id="risk-level-text" style="color: var(--success);">低 (Low)</span>
+                </div>
+                <div class="risk-bar-bg">
+                    <div class="risk-bar-fill" id="risk-bar"></div>
+                </div>
+            </div>
+
+            <div class="criteria-prompt">
+                <span id="typewriter-text">等待动作输入...</span>
+                <span class="cursor">_</span>
+            </div>
+
+            <ul class="risk-list" id="risk-list">
+                <li class="risk-item" id="risk-1">风险①：混淆行为 (不正当竞争)</li>
+                <li class="risk-item" id="risk-2">风险②：虚假宣传</li>
+                <li class="risk-item weak" id="risk-3">风险③：商业诋毁 (隐晦指代)</li>
+                <li class="risk-item" id="risk-4" style="border-left-color: var(--danger); color: #fca5a5; background: #450a0a;">风险④：互联网不正当竞争 (流量劫持)</li>
+            </ul>
+
+            <div class="final-summary" id="final-summary">
+                ⚠️ 警告：竞争行为逐步升级，法律风险持续叠加！
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <button id="btn-1" class="btn-action" onclick="loadAction(1)">加载动作①</button>
+        <button id="btn-2" class="btn-action" onclick="loadAction(2)" disabled>加载动作②</button>
+        <button id="btn-3" class="btn-action" onclick="loadAction(3)" disabled>加载动作③</button>
+        <button id="btn-reset" class="btn-reset" onclick="resetAll()">重新开始</button>
+    </footer>
+</div>
+
+<script>
+    let currentStage = 0;
+    let typeWriterInterval;
+
+    // 打字机效果函数
+    function typeWriter(text) {
+        const el = document.getElementById('typewriter-text');
+        el.innerHTML = '';
+        clearInterval(typeWriterInterval);
+        let i = 0;
+        typeWriterInterval = setInterval(() => {
+            if (i < text.length) {
+                el.innerHTML += text.charAt(i);
+                i++;
+            } else {
+                clearInterval(typeWriterInterval);
+            }
+        }, 50);
+    }
+
+    // 更新右侧风险面板
+    function updateRiskPanel(level, color, width, criteriaText) {
+        const riskLevelText = document.getElementById('risk-level-text');
+        const riskBar = document.getElementById('risk-bar');
+        
+        riskLevelText.innerText = level;
+        riskLevelText.style.color = color;
+        riskBar.style.width = width;
+        riskBar.style.backgroundColor = color;
+        
+        typeWriter(`> 合规审查判定标准：\n> ${criteriaText}`);
+    }
+
+    // 核心流转逻辑
+    function loadAction(stage) {
+        currentStage = stage;
+        document.getElementById('progress-text').innerText = `阶段 ${stage} / 3`;
+
+        const leftPanel = document.getElementById('context-zone');
+
+        if (stage === 1) {
+            const card1 = document.getElementById('action-card-1');
+            card1.classList.remove('hidden');
+            card1.classList.add('anim-slide-left', 'highlight-flash');
+
+            document.getElementById('risk-1').classList.add('risk-show');
+            updateRiskPanel('中等 (Medium)', '#f59e0b', '40%', '是否足以引人误认为是他人商品或者与他人存在特定联系？（是否造成消费者误认）');
+
+            document.getElementById('btn-1').disabled = true;
+            document.getElementById('btn-2').disabled = false;
+        } 
+        else if (stage === 2) {
+            const card2 = document.getElementById('action-card-2');
+            card2.classList.remove('hidden');
+            card2.classList.add('anim-fade-in', 'highlight-flash');
+            
+            setTimeout(() => document.getElementById('risk-2').classList.add('risk-show'), 100);
+            setTimeout(() => document.getElementById('risk-3').classList.add('risk-show'), 400);
+            updateRiskPanel('高 (High)', '#ea580c', '70%', '宣传内容是否真实、准确、有依据？达人言论是否损害了竞争对手的商业信誉？');
+
+            document.getElementById('btn-2').disabled = true;
+            document.getElementById('btn-3').disabled = false;
+        }
+        else if (stage === 3) {
+            const card3 = document.getElementById('action-card-3');
+            card3.classList.remove('hidden');
+            card3.classList.add('anim-shake', 'highlight-flash');
+
+            document.getElementById('risk-4').classList.add('risk-show');
+            updateRiskPanel('极高 (Critical)', '#ef4444', '100%', '是否利用技术手段，通过影响用户选择或者其他方式，妨碍、破坏其他经营者合法提供的网络产品或者服务正常运行？');
+
+            setTimeout(() => {
+                document.getElementById('final-summary').style.display = 'block';
+                document.getElementById('final-summary').classList.add('anim-scale-in');
+            }, 800);
+
+            document.getElementById('btn-3').disabled = true;
+        }
+
+        setTimeout(() => {
+            leftPanel.scrollTo({ top: leftPanel.scrollHeight, behavior: 'smooth' });
+        }, 100);
+    }
+
+    // 重置逻辑
+    function resetAll() {
+        currentStage = 0;
+        document.getElementById('progress-text').innerText = `阶段 0 / 3`;
+
+        [1, 2, 3].forEach(i => {
+            const card = document.getElementById(`action-card-${i}`);
+            card.classList.add('hidden');
+            card.className = 'card hidden'; 
+        });
+
+        updateRiskPanel('低 (Low)', '#22c55e', '10%', '等待输入...');
+        typeWriter('等待动作输入...');
+
+        [1, 2, 3, 4].forEach(i => {
+            document.getElementById(`risk-${i}`).classList.remove('risk-show');
+        });
+        document.getElementById('final-summary').style.display = 'none';
+        document.getElementById('final-summary').classList.remove('anim-scale-in');
+
+        document.getElementById('btn-1').disabled = false;
+        document.getElementById('btn-2').disabled = true;
+        document.getElementById('btn-3').disabled = true;
+
+        document.getElementById('context-zone').scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
